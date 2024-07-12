@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 app.use(express.json())
@@ -5,6 +6,7 @@ const cors = require('cors')
 app.use(cors())
 app.use(express.static('dist'))
 
+const Note = require('./models/note')
 let notes = [
   {
     id: 1,
@@ -30,8 +32,10 @@ const generateId = () => {
   return String(maxId + 1)
 }
 
-app.get('/api/notes/', (request, response) => {
-  response.json(notes)
+app.get('/api/notes', (request, response) => {
+  Note.find({}).then(notes => {
+    response.json(notes)
+  })
 })
 
 app.get('/api/notes/:id', (request, response) => {
@@ -71,7 +75,7 @@ app.post('/api/notes', (request, response) => {
   response.json(note)
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
